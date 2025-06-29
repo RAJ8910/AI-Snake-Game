@@ -1,4 +1,3 @@
-# File: game.py
 import pygame
 import random
 from enum import Enum
@@ -35,7 +34,10 @@ class SnakeGame:
         self.head = Point(self.w//2, self.h//2)
         self.snake = [self.head,
                       Point(self.head.x - BLOCK_SIZE, self.head.y),
-                      Point(self.head.x - (2 * BLOCK_SIZE), self.head.y)]
+                      Point(self.head.x - (2 * BLOCK_SIZE), self.head.y),
+                      
+                      
+                      ]
         self.score = 0
         self.food = None
         self.place_food()
@@ -55,26 +57,35 @@ class SnakeGame:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-
+        old_distance = abs(self.head.x - self.food.x) + abs(self.head.y - self.food.y)
         self._move(action)
         self.snake.insert(0, self.head)
 
         reward = 0
         game_over = False
-        if self.is_collision() or self.move_counter <= 0:
-            game_over = True
-            reward = -10
-            return reward, game_over, self.score
-
+        if self.is_collision() :
+            game_over=True
+            if self.head in self.snake[1:]:
+                return -30,game_over,self.score
+            else:
+                return -20, game_over, self.score
+        
+        if self.move_counter<=0:
+            return -20,True,self.score
+        
         if self.head == self.food:
             self.score += 1
-            reward = 10
+            reward = 20
             self.place_food()
             self.move_counter = MAX_MOVES
         else:
             self.snake.pop()
             self.move_counter -= 1
-
+        new_distance = abs(self.head.x - self.food.x) + abs(self.head.y - self.food.y)
+        if new_distance < old_distance:
+            reward = 1  
+        # else:
+        #     reward = -1  
         self._update_ui()
         self.clock.tick(SPEED)
         return reward, game_over, self.score

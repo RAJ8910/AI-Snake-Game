@@ -1,9 +1,7 @@
-# File: train.py
 from agent import Agent
 from game import SnakeGame
 import matplotlib.pyplot as plt
 
-plt.ion()
 
 def plot(scores, mean_scores):
     plt.figure(1)
@@ -14,8 +12,11 @@ def plot(scores, mean_scores):
     plt.plot(scores, label="Score")
     plt.plot(mean_scores, label="Mean Score")
     plt.ylim(ymin=0)
-    plt.text(len(scores)-1, scores[-1], str(scores[-1]))
-    plt.text(len(mean_scores)-1, mean_scores[-1], str(round(mean_scores[-1], 1)))
+
+    if scores: 
+        plt.text(len(scores)-1, scores[-1], str(scores[-1]))
+    if mean_scores:
+        plt.text(len(mean_scores)-1, mean_scores[-1], str(round(mean_scores[-1], 1)))
     plt.legend()
     plt.draw()
     plt.pause(0.001)
@@ -34,7 +35,7 @@ def train():
             final_move = agent.get_action(state_old)
             reward, done, score = game.play_step(final_move)
             state_new = agent.get_state(game)
-
+            # print("Train:",state_old)
             agent.train_short_memory(state_old, final_move, reward, state_new, done)
             agent.remember(state_old, final_move, reward, state_new, done)
 
@@ -52,16 +53,13 @@ def train():
                 total_score += score
                 mean_score = total_score / agent.n_games
                 mean_scores.append(mean_score)
-                plot(scores, mean_scores)
-
+            
     except KeyboardInterrupt:
         print("Training interrupted. Saving latest model...")
-
     finally:
         agent.model.save("model_final.pth")
         print("Model saved to model_final.pth.")
-        plt.ioff()
-        plt.show() 
-
+        plot(scores, mean_scores)
+    
 if __name__ == '__main__':
     train()
