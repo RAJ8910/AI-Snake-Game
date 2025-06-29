@@ -41,5 +41,5 @@ Watch the AI learn in real-time! It starts playing randomly but gradually develo
 With training, the AI learns to:
 - Avoid collisions
 - Navigate efficiently to food
-- Score 40+ points consistently after 100+ iterations
+- Score 30+ points consistently after 100+ iterations
 - Plan ahead to avoid traps
